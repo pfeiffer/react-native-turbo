@@ -8,6 +8,7 @@ import android.webkit.CookieManager
 import android.webkit.WebView
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -328,6 +329,12 @@ class RNVisitableView(context: Context) : LinearLayout(context), SessionSubscrib
   }
 
   override fun visitProposedToLocation(location: String, options: VisitOptions) {
+    val currentUrl = webView?.url
+    if (currentUrl != null && currentUrl.toUri().host != location.toUri().host) {
+      didOpenExternalUrl(location)
+      return
+    }
+
     sendEvent(RNVisitableViewEvent.VISIT_PROPOSAL, Arguments.createMap().apply {
       putString("url", location)
       putString("action", options.action.name.lowercase())
