@@ -367,10 +367,6 @@ class RNVisitableView(context: Context) : LinearLayout(context), SessionSubscrib
   }
 
   override fun visitCompleted(completedOffline: Boolean) {
-    sendEvent(RNVisitableViewEvent.LOAD, Arguments.createMap().apply {
-      putString("title", webView!!.title)
-      putString("url", webView!!.url)
-    })
     CookieManager
       .getInstance()
       .flush()
