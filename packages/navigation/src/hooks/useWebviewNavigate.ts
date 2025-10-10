@@ -102,6 +102,7 @@ function areParamsSimilarForActionType(
   let ignoredParams = {
     path: undefined,
     params: undefined,
+    pop: undefined, // Ignore pop param added by React Navigation v7
   } as object;
 
   if (actionType === 'replace') {
