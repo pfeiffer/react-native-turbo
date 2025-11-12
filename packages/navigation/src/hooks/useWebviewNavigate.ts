@@ -103,6 +103,9 @@ function areParamsSimilarForActionType(
     path: undefined,
     params: undefined,
     pop: undefined, // Ignore pop param added by React Navigation v7
+    state: undefined, // Ignore state as we drill down manually
+    initial: undefined, // Ignore initial as it's React Navigation internal
+    merge: undefined, // Ignore merge flag used in navigation actions
   } as object;
 
   if (actionType === 'replace') {
