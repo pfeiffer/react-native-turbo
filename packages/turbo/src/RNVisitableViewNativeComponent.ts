@@ -44,6 +44,10 @@ export interface ContentProcessDidTerminateEvent {
   url: string;
 }
 
+export interface ShowLoadingEvent {}
+
+export interface HideLoadingEvent {}
+
 export interface ContentInset {
   top?: WithDefault<Double, 0>;
   left?: WithDefault<Double, 0>;
@@ -78,8 +82,8 @@ export interface NativeProps extends ViewProps {
   onOpenExternalUrl?: DirectEventHandler<OpenExternalUrlEvent>;
   onFormSubmissionStarted?: DirectEventHandler<FormSubmissionEvent>;
   onFormSubmissionFinished?: DirectEventHandler<FormSubmissionEvent>;
-  onShowLoading?: DirectEventHandler<object>;
-  onHideLoading?: DirectEventHandler<object>;
+  onShowLoading?: DirectEventHandler<ShowLoadingEvent>;
+  onHideLoading?: DirectEventHandler<HideLoadingEvent>;
   onContentProcessDidTerminate?: DirectEventHandler<ContentProcessDidTerminateEvent>;
 }
 
