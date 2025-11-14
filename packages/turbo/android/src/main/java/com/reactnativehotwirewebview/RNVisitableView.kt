@@ -297,7 +297,7 @@ class RNVisitableView(context: Context) : LinearLayout(context), SessionSubscrib
   }
 
   private fun sendEvent(event: RNVisitableViewEvent, params: WritableMap) {
-    reactContext.getJSModule(RCTEventEmitter::class.java).receiveEvent(id, event.name, params)
+    reactContext.getJSModule(RCTEventEmitter::class.java).receiveEvent(id, event.jsCallbackName, params)
   }
 
   // region SessionSubscriber
@@ -404,9 +404,8 @@ class RNVisitableView(context: Context) : LinearLayout(context), SessionSubscrib
     onAlertHandler = null
   }
 
-  fun sendConfirmResult(result: String) {
-    val confirmResult = result == "true"
-    onConfirmHandler?.invoke(confirmResult)
+  fun sendConfirmResult(result: Boolean) {
+    onConfirmHandler?.invoke(result)
     onConfirmHandler = null
   }
 
