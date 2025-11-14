@@ -1,12 +1,12 @@
+import type { HostComponent, ViewProps } from 'react-native';
 import type {
   DirectEventHandler,
   Double,
   Int32,
   WithDefault,
 } from 'react-native/Libraries/Types/CodegenTypes';
-import type { HostComponent, ViewProps } from 'react-native';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
 // Event payload types
 export interface LoadEvent {
@@ -15,7 +15,7 @@ export interface LoadEvent {
 }
 
 // MessageEvent can contain arbitrary data from the web view
-export type MessageEvent = Readonly<{}>;
+export type MessageEvent = Readonly<object>;
 
 export interface ErrorEvent {
   url: string;
@@ -78,23 +78,35 @@ export interface NativeProps extends ViewProps {
   onOpenExternalUrl?: DirectEventHandler<OpenExternalUrlEvent>;
   onFormSubmissionStarted?: DirectEventHandler<FormSubmissionEvent>;
   onFormSubmissionFinished?: DirectEventHandler<FormSubmissionEvent>;
-  onShowLoading?: DirectEventHandler<{}>;
-  onHideLoading?: DirectEventHandler<{}>;
+  onShowLoading?: DirectEventHandler<object>;
+  onHideLoading?: DirectEventHandler<object>;
   onContentProcessDidTerminate?: DirectEventHandler<ContentProcessDidTerminateEvent>;
 }
 
 export type ComponentType = HostComponent<NativeProps>;
 
 interface NativeCommands {
-  injectJavaScript: (viewRef: React.ElementRef<ComponentType>, script: string) => void;
+  injectJavaScript: (
+    viewRef: React.ElementRef<ComponentType>,
+    script: string
+  ) => void;
   reload: (viewRef: React.ElementRef<ComponentType>) => void;
   refresh: (viewRef: React.ElementRef<ComponentType>) => void;
   sendAlertResult: (viewRef: React.ElementRef<ComponentType>) => void;
-  sendConfirmResult: (viewRef: React.ElementRef<ComponentType>, result: boolean) => void;
+  sendConfirmResult: (
+    viewRef: React.ElementRef<ComponentType>,
+    result: boolean
+  ) => void;
 }
 
 export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['injectJavaScript', 'reload', 'refresh', 'sendAlertResult', 'sendConfirmResult'],
+  supportedCommands: [
+    'injectJavaScript',
+    'reload',
+    'refresh',
+    'sendAlertResult',
+    'sendConfirmResult',
+  ],
 });
 
 export default codegenNativeComponent<NativeProps>('RNVisitableView');

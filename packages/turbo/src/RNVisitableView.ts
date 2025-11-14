@@ -5,6 +5,9 @@ import {
   Linking,
 } from 'react-native';
 
+import RNVisitableViewNativeComponent, {
+  Commands,
+} from './RNVisitableViewNativeComponent';
 import type {
   AlertHandler,
   DispatchCommandTypes,
@@ -18,10 +21,6 @@ import type {
   ContentInsetObject,
   ProgressViewOffsetObject,
 } from './types';
-
-import RNVisitableViewNativeComponent, {
-  Commands,
-} from './RNVisitableViewNativeComponent';
 
 // Interface should match RNVisitableView exported properties in native code
 export interface RNVisitableViewProps {
