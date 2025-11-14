@@ -40,7 +40,7 @@
   RCT_EXTERN_METHOD(refresh: (nonnull NSNumber) node)
   RCT_EXTERN_METHOD(sendAlertResult: (nonnull NSNumber) node)
   RCT_EXTERN_METHOD(sendConfirmResult: (nonnull NSNumber) node
-                    result: (nonnull NSString) code)
+                    result: (BOOL) result)
 
 
 @end

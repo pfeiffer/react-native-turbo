@@ -1,12 +1,8 @@
 import {
   NativeSyntheticEvent,
-  Platform,
-  requireNativeComponent,
   StyleProp,
-  UIManager,
   ViewStyle,
   Linking,
-  findNodeHandle,
 } from 'react-native';
 
 import type {
@@ -22,6 +18,10 @@ import type {
   ContentInsetObject,
   ProgressViewOffsetObject,
 } from './types';
+
+import RNVisitableViewNativeComponent, {
+  Commands,
+} from './RNVisitableViewNativeComponent';
 
 // Interface should match RNVisitableView exported properties in native code
 export interface RNVisitableViewProps {
@@ -55,19 +55,6 @@ export interface RNVisitableViewProps {
   style?: StyleProp<ViewStyle>;
 }
 
-const LINKING_ERROR =
-  `The package react-native-turbo doesn't seem to be linked. Make sure: \n\n` +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo Go\n';
-
-function transformCommandToAcceptableType(command: number): number | string {
-  if (Platform.OS === 'ios') {
-    return command;
-  }
-  return command.toString();
-}
-
 const initializeWebView = async (webViewRef: React.RefObject<any>) => {
   const initializationPromise = new Promise<void>((resolve) =>
     setTimeout(resolve, 1)
@@ -88,17 +75,7 @@ export async function dispatchCommand(
   command: DispatchCommandTypes,
   ...args: any[]
 ) {
-  const viewConfig = UIManager.getViewManagerConfig('RNVisitableView');
-
-  if (!viewConfig) {
-    throw new Error(LINKING_ERROR);
-  }
-
-  const transformedCommand = transformCommandToAcceptableType(
-    viewConfig.Commands[command]!
-  );
-
-  if (transformedCommand === undefined) {
+  if (!ref?.current) {
     return;
   }
 
@@ -106,13 +83,23 @@ export async function dispatchCommand(
   // after the native sessionHandle prop is set.
   await initializeWebView(ref);
 
-  const reactTag = findNodeHandle(ref.current);
-
-  if (!reactTag) {
-    return;
+  switch (command) {
+    case 'injectJavaScript':
+      Commands.injectJavaScript(ref.current, args[0] as string);
+      break;
+    case 'reload':
+      Commands.reload(ref.current);
+      break;
+    case 'refresh':
+      Commands.refresh(ref.current);
+      break;
+    case 'sendAlertResult':
+      Commands.sendAlertResult(ref.current);
+      break;
+    case 'sendConfirmResult':
+      Commands.sendConfirmResult(ref.current, args[0] as boolean);
+      break;
   }
-
-  UIManager.dispatchViewManagerCommand(reactTag, transformedCommand, args);
 }
 
 export async function openExternalURL({
@@ -127,7 +114,4 @@ export async function openExternalURL({
   }
 }
 
-const RNVisitableView =
-  requireNativeComponent<RNVisitableViewProps>('RNVisitableView');
-
-export default RNVisitableView;
+export default RNVisitableViewNativeComponent;

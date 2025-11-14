@@ -1,0 +1,8 @@
+{
+  "name": "RNHotwireNative",
+  "type": "modules",
+  "jsSrcsDir": "src",
+  "android": {
+    "javaPackageName": "com.reactnativehotwirewebview"
+  }
+}

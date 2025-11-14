@@ -33,13 +33,11 @@ class RNSessionManager(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun getSessionHandles(promise: Promise) {
-    if(sessions.keys.isNotEmpty()) {
-      val sessionHandles = Arguments.createArray()
-      sessions.keys.forEach {
-        sessionHandles.pushString(it)
-      }
-      promise.resolve(sessionHandles)
+    val sessionHandles = Arguments.createArray()
+    sessions.keys.forEach {
+      sessionHandles.pushString(it)
     }
+    promise.resolve(sessionHandles)
   }
 
   @ReactMethod

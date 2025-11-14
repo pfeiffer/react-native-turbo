@@ -187,9 +187,8 @@ class RNVisitableView: UIView, RNSessionSubscriber {
     self.onAlertHandler = nil
   }
 
-  public func sendConfirmResult(result: NSString) -> Void {
-    let confirmResult = result == "true"
-    self.onConfirmHandler?(confirmResult)
+  public func sendConfirmResult(result: Bool) -> Void {
+    self.onConfirmHandler?(result)
     self.onConfirmHandler = nil
   }
 
@@ -305,7 +304,7 @@ extension RNVisitableView: RNVisitableViewControllerDelegate {
     // Ensure that all completion handlers have been called.
     // Otherwise, an NSInternalInconsistencyException might occur.
     sendAlertResult()
-    sendConfirmResult(result: "")
+    sendConfirmResult(result: false)
   }
 
   func visitableDidDisappear(visitable: Visitable) {

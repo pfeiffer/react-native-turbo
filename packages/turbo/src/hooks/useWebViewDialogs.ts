@@ -32,11 +32,7 @@ export function useWebViewDialogs(
   const handleConfirm = useCallback(
     ({ nativeEvent: { message } }: NativeSyntheticEvent<AlertHandler>) => {
       const dispatch = (value: boolean) =>
-        dispatchCommand(
-          visitableViewRef,
-          'sendConfirmResult',
-          value.toString()
-        );
+        dispatchCommand(visitableViewRef, 'sendConfirmResult', value);
 
       if (onConfirm) {
         onConfirm(message, (value) => dispatch(value));
