@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-export const stradaBridgeScript = `
+export const stradaBridgeScript = (stradaComponentNames: string[]) => `
 (() => {
   if(window.nativeBridge !== undefined){
     return;
@@ -109,6 +109,7 @@ export const stradaBridgeScript = `
 
   function initializeBridge() {
     window.nativeBridge = new NativeBridge();
+    window.nativeBridge.register(${JSON.stringify(stradaComponentNames)});
   }
 })();
 `;
