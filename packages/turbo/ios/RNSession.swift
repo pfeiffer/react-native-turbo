@@ -121,7 +121,10 @@ extension RNSession: SessionDelegate {
 extension RNSession: WKScriptMessageHandler {
   
   func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-    visitableView?.handleMessage(message: message)
+    guard let body = message.body as? String else {
+      return
+    }
+    visitableView?.handleMessage(message: body)
   }
   
 }

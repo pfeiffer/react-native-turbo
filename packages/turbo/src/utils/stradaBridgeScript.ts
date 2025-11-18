@@ -79,9 +79,11 @@ export const stradaBridgeScript = `
     // Native handler
 
     postMessage(message) {
+      const messageString = JSON.stringify(message);
+
       ${Platform.select({
-        android: 'AndroidInterface.postMessage(JSON.stringify(message))',
-        ios: 'webkit.messageHandlers.nativeApp.postMessage(message)',
+        android: 'AndroidInterface.postMessage(messageString)',
+        ios: 'webkit.messageHandlers.nativeApp.postMessage(messageString)',
       })}
     }
 

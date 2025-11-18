@@ -4,7 +4,7 @@ import com.facebook.react.bridge.WritableMap
 
 interface SessionSubscriber: SessionCallbackAdapter {
   fun detachWebView()
-  fun handleMessage(message: WritableMap)
+  fun handleMessage(message: String)
   fun injectJavaScript(script: String)
   fun didOpenExternalUrl(url: String)
   fun didStartFormSubmission(url: String)

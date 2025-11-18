@@ -172,10 +172,8 @@ class RNVisitableView: UIView, RNSessionSubscriber {
     controller = nil
   }
     
-  public func handleMessage(message: WKScriptMessage) {
-    if let messageBody = message.body as? [AnyHashable : Any] {
-      onMessage?(messageBody)
-    }
+  public func handleMessage(message: String) {
+    onMessage?(["message": message])
   }
 
   public func injectJavaScript(code: NSString) -> Void {
