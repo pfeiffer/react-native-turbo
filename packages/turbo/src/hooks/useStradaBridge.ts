@@ -12,8 +12,7 @@ export const useStradaBridge = (
     const stradaComponentNames =
       stradaComponents?.map(({ componentName }) => componentName) || [];
     const stradaInitializationScript = `
-      ${stradaBridgeScript}
-      window.nativeBridge.register(${JSON.stringify(stradaComponentNames)})
+      ${stradaBridgeScript(stradaComponentNames)}
     `;
 
     dispatchCommand(
