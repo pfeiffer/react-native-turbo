@@ -22,7 +22,9 @@ export interface ContentProcessDidTerminateEvent {
   url: string;
 }
 
-export type MessageEvent = object;
+export type MessageEvent = {
+  message: string;
+};
 
 export interface AlertHandler {
   message: string;

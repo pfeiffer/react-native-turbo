@@ -14,8 +14,9 @@ export interface LoadEvent {
   url: string;
 }
 
-// MessageEvent can contain arbitrary data from the web view
-export type MessageEvent = Readonly<object>;
+export type MessageEvent = {
+  message: string;
+};
 
 export interface ErrorEvent {
   url: string;

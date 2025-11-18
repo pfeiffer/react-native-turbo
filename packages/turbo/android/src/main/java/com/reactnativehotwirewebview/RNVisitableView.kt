@@ -306,8 +306,10 @@ class RNVisitableView(context: Context) : LinearLayout(context), SessionSubscrib
     webView?.evaluateJavascript(script, null)
   }
 
-  override fun handleMessage(message: WritableMap) {
-    sendEvent(RNVisitableViewEvent.MESSAGE, message)
+  override fun handleMessage(message: String) {
+    sendEvent(RNVisitableViewEvent.MESSAGE, Arguments.createMap().apply {
+      putString("message", message)
+    })
   }
 
   override fun didOpenExternalUrl(url: String) {

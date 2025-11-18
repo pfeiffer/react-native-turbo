@@ -29,8 +29,16 @@ export function useMessageQueue(
 
   const handleOnMessage = useCallback(
     (e: NativeSyntheticEvent<MessageEvent>) => {
+      let message: object;
+      try {
+        message = JSON.parse(e.nativeEvent.message);
+      } catch (error) {
+        console.error('Failed to parse message from native:', error);
+        return;
+      }
+
       onMessageCallbacks.current.forEach((listener) => {
-        listener?.(e.nativeEvent);
+        listener?.(message);
       });
     },
     []
