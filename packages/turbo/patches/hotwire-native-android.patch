@@ -19,6 +19,23 @@ index 6cf8bd1..255bd35 100644
                      action(callback)
                  }
              }
+diff --git a/core/src/main/kotlin/dev/hotwire/core/turbo/webview/HotwireWebView.kt b/core/src/main/kotlin/dev/hotwire/core/turbo/webview/HotwireWebView.kt
+index 0e82496..829a01c 100644
+--- a/core/src/main/kotlin/dev/hotwire/core/turbo/webview/HotwireWebView.kt
++++ b/core/src/main/kotlin/dev/hotwire/core/turbo/webview/HotwireWebView.kt
+@@ -41,7 +41,11 @@ open class HotwireWebView @JvmOverloads constructor(
+         settings.userAgentString = Hotwire.config.userAgent(context)
+         settings.setSupportMultipleWindows(true)
+         layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+-        initDayNightTheming()
++        try {
++            initDayNightTheming()
++        } catch (e: ClassCastException) {
++            // Ignore on broken WebView implementations
++        }
+     }
+ 
+     /**
 diff --git a/navigation-fragments/src/main/java/dev/hotwire/navigation/util/HotwireViewScreenshotHolder.kt b/navigation-fragments/src/main/java/dev/hotwire/navigation/util/HotwireViewScreenshotHolder.kt
 index d0beb31..ba36635 100644
 --- a/navigation-fragments/src/main/java/dev/hotwire/navigation/util/HotwireViewScreenshotHolder.kt
