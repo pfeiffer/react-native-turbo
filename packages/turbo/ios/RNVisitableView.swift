@@ -81,7 +81,7 @@ class RNVisitableView: UIView, RNSessionSubscriber {
   lazy var controller: RNVisitableViewController? = RNVisitableViewController(reactViewController: reactViewController(), delegate: self)
     
   private var isRefreshing: Bool {
-    controller!.visitableView.isRefreshing
+    controller?.visitableView.isRefreshing ?? false
   }
     
   private func configureWebView() {
@@ -112,12 +112,17 @@ class RNVisitableView: UIView, RNSessionSubscriber {
     webViewUrlObservation = webView?.observe(\.url, options: [.new]) { [weak self] webView, change in
             guard let self = self,
                   let newUrl = change.newValue ?? nil,
-                  let controller = self.controller else { return }
-            
+                  let controller = self.controller,
+                  // Only update URL if this controller is still the active visitable.
+                  // Otherwise, a deactivated visitable's URL gets corrupted when the
+                  // shared WebView navigates for a different visitable.
+                  self.session?.turboSession.activeVisitable === controller
+                  else { return }
+
             if controller.visitableURL != newUrl {
                 controller.visitableURL = newUrl
             }
-        }   
+        }
     }
     
     private func stopObservingWebViewUrl() {
@@ -299,6 +304,8 @@ extension RNVisitableView: RNVisitableViewControllerDelegate {
   }
     
   func visitableWillDisappear(visitable: Visitable) {
+    stopObservingWebViewUrl()
+
     // Ensure that all completion handlers have been called.
     // Otherwise, an NSInternalInconsistencyException might occur.
     sendAlertResult()
@@ -306,7 +313,6 @@ extension RNVisitableView: RNVisitableViewControllerDelegate {
   }
 
   func visitableDidDisappear(visitable: Visitable) {
-    stopObservingWebViewUrl()
   }
 
   func visitableDidRender(visitable: Visitable) {
