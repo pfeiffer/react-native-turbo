@@ -250,11 +250,13 @@ class RNVisitableView(context: Context) : LinearLayout(context), SessionSubscrib
   }
 
   private val measureAndLayout = Runnable {
-    measure(
-      MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
-    )
-    layout(left, top, right, bottom)
+    if (isAttachedToWindow) {
+      measure(
+        MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+        MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
+      )
+      layout(left, top, right, bottom)
+    }
   }
 
   /**
