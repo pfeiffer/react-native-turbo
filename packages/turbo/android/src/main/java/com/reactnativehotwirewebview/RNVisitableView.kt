@@ -32,7 +32,7 @@ import kotlinx.coroutines.runBlocking
 
 const val REFRESH_SCRIPT = "typeof Turbo.session.refresh === 'function'" +
         "? Turbo.session.refresh(document.baseURI)" + // Turbo 8+
-        ": Turbo.visit(document.baseURI, { action: 'replace', shouldCacheSnapshot: 'false' })" // Older Turbo versions 
+        ": Turbo.visit(document.baseURI, { action: 'replace', shouldCacheSnapshot: 'false' })" // Older Turbo versions
 
 class RNVisitableView(context: Context) : LinearLayout(context), SessionSubscriber {
 
@@ -218,7 +218,20 @@ class RNVisitableView(context: Context) : LinearLayout(context), SessionSubscrib
     // bottom tabs. In this case, we need to remove the webview from
     // the parent before attaching it to the new one.
     if (webView!!.parent != null) {
-      (webView!!.parent as ViewGroup).removeView(webView)
+      val parent = webView!!.parent as ViewGroup
+      parent.endViewTransition(webView!!)
+      parent.removeView(webView)
+
+      // When a fullScreenModal is dismissed, the react-native-screens
+      // Fragment animation may remove the webView from its parent's
+      // children array without clearing its mParent field. In that state,
+      // removeView() silently fails (indexOfChild returns -1) and no
+      // public API can clear mParent. Use the reparent helper to claim
+      // temporary ownership via the protected attachViewToParent(), then
+      // remove normally — leaving mParent properly null.
+      if (webView!!.parent != null) {
+        WebViewReparentHelper(reactContext).clearGhostParent(webView!!)
+      }
     }
 
     // Re-layout the HotwireView before attaching to make page restorations work correctly.
