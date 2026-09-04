@@ -12,12 +12,10 @@ import WebKit
 class RNSessionManager: NSObject {
 
   private var sessions: [NSString: RNSession] = [:]
-  private var processPool = WKProcessPool()
   static var shared: RNSessionManager = RNSessionManager()
 
   func findOrCreateSession(sessionHandle: NSString, webViewConfiguration: WKWebViewConfiguration) -> RNSession {
     if(sessions[sessionHandle] == nil) {
-      webViewConfiguration.processPool = processPool
       sessions[sessionHandle] = RNSession(sessionHandle: sessionHandle, webViewConfiguration: webViewConfiguration)
     }
     return sessions[sessionHandle]!

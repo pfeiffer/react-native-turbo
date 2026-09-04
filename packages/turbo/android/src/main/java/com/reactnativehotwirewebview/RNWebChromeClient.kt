@@ -48,11 +48,11 @@ class RNWebChromeClient(
   }
 
 
-  override fun onActivityResult(p0: Activity?, requestCode: Int, resultCode: Int, data: Intent?) {
+  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     fileChooserDelegate.onActivityResult(resultCode, data)
   }
 
-  override fun onNewIntent(p0: Intent?) {
+  override fun onNewIntent(intent: Intent) {
 
   }
 
