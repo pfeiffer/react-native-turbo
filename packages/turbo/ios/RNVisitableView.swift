@@ -154,6 +154,7 @@ class RNVisitableView: UIView, RNSessionSubscriber {
     addSubview(controller!.view)
     controller!.view.frame = bounds // Fixes incorrect size of the webview
     controller!.didMove(toParent: viewController)
+    registerContentScrollView()
 
     // Sometimes UIPageViewController does not automatically call viewDidAppear
     // on its child view controllers. We need to manually end the appearance transition
@@ -163,6 +164,34 @@ class RNVisitableView: UIView, RNSessionSubscriber {
     }
   }
     
+  /// react-native-screens locates a screen's content scroll view by walking
+  /// `subviews[0]` down from the screen, which never reaches our web view:
+  /// Hotwire's VisitableView installs its activity indicator before it adds the
+  /// WKWebView, so the first descendant chain dead-ends. Without that
+  /// association UIKit has no scroll view to drive the scroll edge appearance or
+  /// the iOS 26 tab bar minimize behavior, so register it explicitly on the view
+  /// controller the bar actually consults — the one it holds directly.
+  private func registerContentScrollView() {
+    guard let scrollView = webView?.scrollView else { return }
+
+    // The view controller hierarchy isn't necessarily parented yet when the
+    // view is attached, so let the current run loop finish before walking it.
+    DispatchQueue.main.async { [weak self] in
+      // `setContentScrollView(_:for:)` is iOS 15; the podspec still allows 14.
+      guard #available(iOS 15.0, *), let self = self else { return }
+
+      var candidate = self.reactViewController()
+
+      while let current = candidate {
+        if current.parent is UITabBarController {
+          current.setContentScrollView(scrollView, for: .all)
+          return
+        }
+        candidate = current.parent
+      }
+    }
+  }
+
   override func didSetProps(_ changedProps: [String]!) {
     super.didSetProps(changedProps)
 
@@ -301,6 +330,10 @@ extension RNVisitableView: RNVisitableViewControllerDelegate {
     configureWebView()
     startObservingWebViewUrl()
     session?.visitableViewDidAppear(view: self)
+    // The web view is shared between visitables, so whichever one is on screen
+    // has to claim it — a pager mounts every page, and the last to mount would
+    // otherwise keep the registration.
+    registerContentScrollView()
   }
     
   func visitableWillDisappear(visitable: Visitable) {
