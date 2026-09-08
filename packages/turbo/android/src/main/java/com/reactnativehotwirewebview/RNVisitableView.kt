@@ -3,6 +3,7 @@ package com.reactnativehotwirewebview
 import android.content.Context
 import android.graphics.Bitmap
 import android.view.MotionEvent
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.WebView
@@ -107,6 +108,11 @@ class RNVisitableView(context: Context) : LinearLayout(context), SessionSubscrib
   private var isWebViewAttachedToNewDestination = false
   private val screenshotHolder = HotwireViewScreenshotHolder()
 
+  private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
+  private var gestureStartX = 0f
+  private var gestureStartY = 0f
+  private var axisLocked = false
+
   // Views
   private val visitableView = inflate(context, R.layout.hotwire_view, null) as ViewGroup
   private val hotwireView: HotwireView by lazy { visitableView.findViewById(R.id.hotwire_view) }
@@ -134,7 +140,36 @@ class RNVisitableView(context: Context) : LinearLayout(context), SessionSubscrib
     if (!scrollEnabled) {
       webView.setOnTouchListener(OnTouchListener { _, event -> event.action == MotionEvent.ACTION_MOVE })
     } else {
-      webView.setOnTouchListener(null)
+      webView.setOnTouchListener(OnTouchListener { _, event -> lockScrollAxis(event); false })
+    }
+  }
+
+  // Locks the gesture to one axis for its duration, like UIScrollView's directional
+  // lock on iOS, so a horizontal pager can't take over a vertical scroll.
+  // Disallows from hotwireView to keep webViewRefresh, below it, able to intercept.
+  private fun lockScrollAxis(event: MotionEvent) {
+    when (event.actionMasked) {
+      MotionEvent.ACTION_DOWN -> {
+        gestureStartX = event.rawX
+        gestureStartY = event.rawY
+        axisLocked = false
+      }
+      MotionEvent.ACTION_MOVE -> {
+        if (axisLocked) return
+
+        val dx = kotlin.math.abs(event.rawX - gestureStartX)
+        val dy = kotlin.math.abs(event.rawY - gestureStartY)
+        if (dx < touchSlop && dy < touchSlop) return
+
+        axisLocked = true
+        if (dy > dx) {
+          hotwireView.requestDisallowInterceptTouchEvent(true)
+        }
+      }
+      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+        axisLocked = false
+        hotwireView.requestDisallowInterceptTouchEvent(false)
+      }
     }
   }
 
@@ -151,6 +186,9 @@ class RNVisitableView(context: Context) : LinearLayout(context), SessionSubscrib
   private fun visit() {
     attachWebView {
       isWebViewAttachedToNewDestination = it
+
+      // Rebind the touch listener, since the WebView is shared between screens.
+      updateWebViewConfiguration()
 
       // Visit every time the WebView is reattached to the current Fragment.
       if (isWebViewAttachedToNewDestination) {
